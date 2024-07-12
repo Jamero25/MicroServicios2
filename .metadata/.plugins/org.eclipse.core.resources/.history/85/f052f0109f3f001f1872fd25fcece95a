@@ -1,0 +1,21 @@
+package com.example.demo.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dao.ClienteDAO;
+import com.example.demo.dao.ClienteDTO;
+
+@Service
+public class ClienteService implements IClienteService{
+
+	@Autowired
+	private ClienteDAO clienteDAO;
+	
+	@Override
+	public void guardarClienteNuevo(ClienteDTO clienteDTO) {
+		
+		
+	}
+
+}

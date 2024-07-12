@@ -1,0 +1,2 @@
+spring.application.name=ApiServicios
+spring.datasource.url=jdbc:sqlserver://localhost\\SQLEXPRESS;Database=master;Trusted_Connection=True;

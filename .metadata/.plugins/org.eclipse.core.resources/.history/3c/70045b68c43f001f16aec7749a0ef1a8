@@ -1,0 +1,54 @@
+package com.example.demo.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dao.ClienteDAO;
+import com.example.demo.dao.ClienteDTO;
+import com.example.demo.entity.Cliente;
+
+import reactor.core.publisher.Mono;
+
+@Service
+public class ClienteService implements IClienteService{
+
+	@Autowired
+	private ClienteDAO clienteDAO;
+	
+	@Override
+	public void guardarClienteNuevo(ClienteDTO clienteDTO) {
+		
+		Cliente cliente = new Cliente();
+		cliente.setNombre(clienteDTO.getNombre());
+		cliente.setGenero(obtenerGeneroCliente(clienteDTO.getGenero()));
+		cliente.setIdentificacion(clienteDTO.getIdentificacion());
+		cliente.setDireccion(clienteDTO.getDireccion());
+		cliente.setTelefono(clienteDTO.getTelefono());
+		cliente.setContrasenha(clienteDTO.getContrasenha());
+		cliente.setClienteId(Long.valueOf(clienteDTO.getIdentificacion()));
+		cliente.setEstado(clienteDTO.getEstado());
+		clienteDAO.save(cliente);
+	}
+
+	
+	private int obtenerGeneroCliente(String genero) {
+		int gender = 0;
+		switch (genero) {
+		case "M": 
+			gender = 1;
+			break;
+		case "F":
+			gender = 2;
+			break;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + genero);
+		}
+		return gender;
+	}
+
+
+	@Override
+	public Cliente obtenerclientById(Long id) {
+		return clienteDAO.findById(id).get();
+	}
+}

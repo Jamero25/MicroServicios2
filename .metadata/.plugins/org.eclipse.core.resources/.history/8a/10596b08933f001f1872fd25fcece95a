@@ -1,0 +1,14 @@
+package com.example.demo.entity;
+
+public class Persona {
+
+	private String nombre;
+	private int genero;
+	private int edad;
+	private String identificacion;
+	private String direccion;
+	private String telefono;
+	
+	
+	
+}

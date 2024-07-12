@@ -1,0 +1,4 @@
+spring.application.name=ApiServicios
+spring.datasource.url=jdbc:sqlserver://localhost\\SQLEXPRESS;Database=master;Trusted_Connection=True;
+spring.datasource.driverClassName=com.microsoft.sqlserver.jdbc.SQLServerDriver
+spring.jpa.hibernate.dialect=org.hibernate.dialect.SQLServerDialect

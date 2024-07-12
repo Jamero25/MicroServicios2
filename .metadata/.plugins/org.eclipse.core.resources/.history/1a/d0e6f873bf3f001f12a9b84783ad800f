@@ -1,0 +1,12 @@
+package com.example.demo.dao;
+
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import org.springframework.stereotype.Repository;
+
+import com.example.demo.entity.Cliente;
+
+@Repository
+public interface ClienteDAO extends ReactiveCrudRepository<Cliente, Long>{
+
+	
+}

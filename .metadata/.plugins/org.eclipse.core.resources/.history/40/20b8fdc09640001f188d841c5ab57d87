@@ -1,0 +1,108 @@
+package com.example.demo.service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import com.example.demo.dao.CuentaDAO;
+import com.example.demo.dao.EstadoDeCuentaDTO;
+import com.example.demo.dao.MovimientosDAO;
+import com.example.demo.dao.MovimientosDTO;
+import com.example.demo.entidades.Cuenta;
+import com.example.demo.entidades.Movimientos;
+
+@Service
+public class MovimientosService {
+
+	@Autowired
+	private MovimientosDAO movimientosDAO;
+	@Autowired
+	private CuentaDAO cuentaDAO;
+	
+	private WebClient webClient;
+	
+	@KafkaListener(topics="movimientos", groupId = "my-group")
+	public void listenerMovimientos(MovimientosDTO movimientosDTO) {
+		//Registro movimientos
+		System.out.println(" MENSAJE RECIBIDO Creacion movimientos ");
+		registrarMovimientos(movimientosDTO);
+	}
+	
+	
+	public String guardarRegistroMovimiento(MovimientosDTO movimientosDTO) {
+		String resultado = "";
+		
+		boolean saldoDisponible = validarFondosSuficientes(movimientosDTO);
+		if(saldoDisponible) {
+			Movimientos movimientos = new Movimientos();
+			movimientos.setCuenta(movimientosDTO.getCuenta());
+			movimientos.setTipoMovimiento(movimientosDTO.getTipo());
+			movimientos.setValor(movimientosDTO.getMonto());
+			movimientos.setSaldo(obtenerSaldoActualAfterTransaction(movimientosDTO));
+			movimientos.setFechaMovimiento(new Date());
+			movimientosDAO.save(movimientos);
+			resultado = "Movimiento Realizado con éxito.";
+		}else {
+			resultado = "Saldo insuficiente para esta operación";
+		}
+		
+		
+		return resultado;
+	}
+	
+	private boolean validarFondosSuficientes(MovimientosDTO movimientosDTO) {
+		boolean permitido = false;
+		Cuenta cuenta = cuentaDAO.obtenerCuentaByNumCuenta(movimientosDTO.getCuenta());
+		Double montoTransaccion = movimientosDTO.getMonto() * -1;
+		if(cuenta != null && cuenta.getSaldoInicial() > 0.0 && cuenta.getSaldoInicial() > montoTransaccion) {
+			permitido = true;
+		}
+		return permitido;
+	}
+	
+	private void registrarMovimientos(MovimientosDTO movimientosDTO) {
+		
+		Movimientos movimientos = new Movimientos();
+		movimientos.setCuenta(movimientosDTO.getCuenta());
+		movimientos.setTipoMovimiento(movimientosDTO.getTipo());
+		movimientos.setValor(movimientosDTO.getMonto());
+		movimientos.setSaldo(obtenerSaldoActualAfterTransaction(movimientosDTO));
+		movimientos.setFechaMovimiento(new Date());
+		movimientosDAO.save(movimientos);
+		
+	}
+	
+	private Double obtenerSaldoActualAfterTransaction(MovimientosDTO movimientosDTO) {
+		Double saldoActual = 0.0;
+		Cuenta cuenta = cuentaDAO.obtenerCuentaByNumCuenta(movimientosDTO.getCuenta());
+		if(movimientosDTO.getMonto() < 0 ) {
+			Double montoTransaccion = movimientosDTO.getMonto() * -1;
+			//Se resta
+			saldoActual = cuenta.getSaldoInicial() - montoTransaccion;
+		}else {
+			saldoActual = cuenta.getSaldoInicial() + movimientosDTO.getMonto();
+		}
+		
+		if(saldoActual >= 0.0) {
+			cuenta.setSaldoInicial(saldoActual);
+			cuentaDAO.save(cuenta);
+		}
+		
+		return saldoActual;
+	}
+	
+	
+	public EstadoDeCuentaDTO[] obtenerListadoMovimientosPorCuenta(Properties datosProp) {
+		EstadoDeCuentaDTO[] estadosList;
+		List<Cuenta> cuenta = cuentaDAO.obtenerListadoCuentasByIdentificacion(datosProp.getProperty("identificacion"));
+		if(!cuenta.isEmpty()) {
+			estadosList = new EstadoDeCuentaDTO[cuenta.size()];
+		}
+	}
+	
+}

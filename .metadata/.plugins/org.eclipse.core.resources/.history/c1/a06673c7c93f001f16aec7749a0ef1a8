@@ -1,0 +1,20 @@
+package com.example.demo.entidades;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.websocket.ClientEndpoint;
+
+@Entity
+public class Cuenta {
+
+	@Id
+	@GeneratedValue
+	private long idCuenta;
+	private String numCuenta;
+	private int tipoCuenta;
+	private Double saldoInicial;
+	private Boolean activo;
+	private Cliente cliente;
+	
+}

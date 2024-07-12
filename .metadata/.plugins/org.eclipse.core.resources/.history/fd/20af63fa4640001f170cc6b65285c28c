@@ -1,0 +1,16 @@
+package com.example.demo.service;
+
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dao.CuentaDTO;
+
+@Service
+public class CuentaService {
+
+	
+	@KafkaListener(topics = "cuentas", groupId = "my-group")
+	public void listen(CuentaDTO cuentaDTO) {
+		 System.out.println("MENSAJE RECIBIDO " + cuentaDTO.getIdentificacion() );
+	}
+}

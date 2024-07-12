@@ -1,0 +1,8 @@
+package com.example.demo.service;
+
+import com.example.demo.dao.ClienteDTO;
+
+public interface IClienteService {
+
+	void guardarClienteNuevo(ClienteDTO clienteDTO);
+}

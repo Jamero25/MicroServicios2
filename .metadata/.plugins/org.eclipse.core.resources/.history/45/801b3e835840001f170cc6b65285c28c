@@ -1,0 +1,38 @@
+package com.example.demo.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dao.MovimientosDAO;
+import com.example.demo.dao.MovimientosDTO;
+import com.example.demo.entidades.Movimientos;
+
+@Service
+public class MovimientosService {
+
+	@Autowired
+	private MovimientosDAO movimientosDAO;
+	
+	@KafkaListener(topics="movimientos", groupId = "my-group")
+	public void listenerMovimientos(MovimientosDTO movimientosDTO) {
+		//Registro movimientos
+		System.out.println(" MENSAJE RECIBIDO Creacion movimientos ");
+		registrarMovimientos(movimientosDTO);
+	}
+	
+	private void registrarMovimientos(MovimientosDTO movimientosDTO) {
+		
+		Movimientos movimientos = new Movimientos();
+		movimientos.setCuenta(movimientosDTO.getCuenta());
+		movimientos.setTipoMovimiento(movimientosDTO.getTipo());
+		movimientos.setValor(movimientosDTO.getMonto());
+		movimientos.setSaldo(obtenerSaldoActualAfterTransaction(movimientosDTO));
+		
+		movimientosDAO.save(movimientos);
+	}
+	
+	private Double obtenerSaldoActualAfterTransaction(MovimientosDTO movimientosDTO) {
+		
+	}
+}

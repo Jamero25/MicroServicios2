@@ -1,0 +1,10 @@
+package com.example.demo.dao;
+
+public class CuentaDTO {
+
+	private String numCuenta;
+	private int tipoCuenta;
+	private Double saldo;
+	private Boolean estado;
+	private String identificacion;
+}

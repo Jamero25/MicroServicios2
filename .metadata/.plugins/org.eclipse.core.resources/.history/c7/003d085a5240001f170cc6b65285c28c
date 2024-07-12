@@ -1,0 +1,8 @@
+package com.example.demo.entidades;
+
+import jakarta.persistence.Entity;
+
+@Entity
+public class Movimientos {
+
+}

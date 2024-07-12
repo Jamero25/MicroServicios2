@@ -1,0 +1,60 @@
+package com.example.demo.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import com.example.demo.dao.MovimientosDTO;
+import com.example.demo.entity.Cliente;
+
+@Service
+public class MovimientosService implements IMovimientosService {
+
+	@Autowired
+	private IClienteService clienteService;
+
+	@Autowired
+	private WebClient webClient;
+
+	@Autowired
+	private KafkaTemplate<String, MovimientosDTO> kafkaTemplateMovimientos;
+
+	@Override
+	public void guardarMovimientoNuevo(MovimientosDTO movimientosDTO) {
+		if (movimientosDTO.getIdentificacion() != null) {
+			Cliente cliente = clienteService.obtenerClienteByIdentificacion(movimientosDTO.getIdentificacion());
+			if (cliente != null) {
+
+				// Mandamos a crear o consultar la cuenta.
+				kafkaTemplateMovimientos.send("movimientos", movimientosDTO);
+			}
+
+		}
+
+	}
+
+	@Override
+	public void guardarMovimientosWebClient(MovimientosDTO movimientosDTO) {
+		if (movimientosDTO.getIdentificacion() != null) {
+			Cliente cliente = clienteService.obtenerClienteByIdentificacion(movimientosDTO.getIdentificacion());
+			if (cliente != null) {
+				String response = webClient.post().contentType(MediaType.APPLICATION_JSON)
+						.body(BodyInserters.fromValue(movimientosDTO)).retrieve().bodyToMono(String.class)
+						.block();
+				
+				System.out.println("EL RESULTADO ENE EL PRIMER SERVICE" + response ); 
+			}
+		}
+
+	}
+
+	public void getWebClient(String url) {
+		this.webClient = WebClient.builder().baseUrl("http://localhost:8081/ApiServicios-1/registrarMovimiento")
+				.build();
+
+	}
+
+}

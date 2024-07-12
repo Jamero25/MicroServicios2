@@ -1,0 +1,9 @@
+package com.example.demo.dao;
+
+public class MovimientosDTO {
+
+	private String identificacion;
+	private String cuenta;
+	private int tipo;
+	private Double monto;
+}

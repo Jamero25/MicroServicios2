@@ -1,0 +1,16 @@
+package com.example.demo.service;
+
+import org.springframework.stereotype.Service;
+
+import com.example.demo.dao.MovimientosDTO;
+
+@Service
+public class MovimientosService implements IMovimientosService{
+
+	@Override
+	public void guardarMovimientoNuevo(MovimientosDTO movimientosDTO) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}
